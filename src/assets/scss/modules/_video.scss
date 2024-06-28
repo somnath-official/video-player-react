@@ -1,0 +1,68 @@
+.video-player-container {
+    position: relative;
+    display: flex;
+    cursor: pointer;
+
+    video.video-player {
+        width: 100%;
+    }
+
+    &:hover {
+        .video-controller {
+            opacity: 1;
+            transition: opacity 0s ease-out;
+        }
+
+        .backdrop {
+            transition: height 0s ease-out;
+        }
+    }
+
+    .video-controller {
+        position: absolute;
+        top: 0px;
+        bottom: 0px;
+        left: 0px;
+        right: 0px;
+        transition: opacity 1s ease-out;
+        opacity: 0;
+
+        .backdrop {
+            height: 100%;
+            position: absolute;
+            top: 0px;
+            bottom: 0px;
+            right: 0px;
+            left: 0px;
+            z-index: 0;
+            background-color: #0000002d;
+
+            transition: height 1s ease-out;
+        }
+
+        .controllers {
+            position: absolute;
+            bottom: 0px;
+            left: 0px;
+            right: 0px;
+            z-index: 1;
+            padding: 8px 16px;
+
+            i.fa {
+                cursor: pointer;
+                color: white;
+                // font-size: 18px;
+
+                // &.fa-play,
+                // &.fa-pause {
+                //     font-size: 24px;
+                // }
+            }
+            
+            .volume-controller {
+                margin-left: 8px;
+            }
+        }
+
+    }
+}
