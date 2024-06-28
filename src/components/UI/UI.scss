@@ -1,0 +1,26 @@
+/************************** Card ****************************/
+.template-x-card {
+    background-color: white;
+    padding: 1rem;
+    border-radius: 4px;
+    box-shadow: 4px 4px 8px black;
+    color: black;
+}
+
+/************************* Container *************************/
+.template-x-container {
+    width: 80%;
+    margin: 0 auto;
+    padding: 20px;
+
+    /* Media query for tablets (768px - 1023px) */
+    @media (min-width: 768px) and (max-width: 1023px) {
+        width: 90%;
+    }
+
+    /* Media query for mobile devices (up to 767px) */
+    @media (max-width: 767px) {
+        width: 100%;
+        // padding: 10px;
+    }
+}
