@@ -7,7 +7,7 @@ export const Video = ({ video }: { video: IVideo }) => {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const [videoVolume, setVideoVolume] = useState(1)
   const [isVideoMuted, setIsVideoMuted] = useState(false)
-  const [loopVideo, setLoopVideo] = useState(false)
+  const [loopVideo, setLoopVideo] = useState(true)
 
   useEffect(() => {
     init()
@@ -43,10 +43,10 @@ export const Video = ({ video }: { video: IVideo }) => {
   }
 
   const getVolumeIcon = () => {
-    if (isVideoMuted) return <i className="fa fa-volume fa-solid fa-volume-xmark" onClick={unMmuteVideo}></i>
+    if (isVideoMuted) return <i className="fa-duotone fa-volume-slash" onClick={unMmuteVideo}></i>
     switch (videoVolume) {
       case 1:
-        return <i className="fa fa-volume fa-solid fa-volume-high" onClick={muteVideo}></i>
+        return <i className="fa-duotone fa-volume-high" onClick={muteVideo}></i>
       default:
         return ''
     }
@@ -82,8 +82,14 @@ export const Video = ({ video }: { video: IVideo }) => {
             }
           </span>
 
-          <span className="volume-controller">
+          <span className="volume-controller" onClick={(e: React.MouseEvent<HTMLSpanElement>) => e.stopPropagation()}>
             {getVolumeIcon()}
+            <input
+              type="range"
+              onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                e.stopPropagation()
+              }}
+            />
           </span>
         </div>
       </div>
