@@ -6,3 +6,9 @@ export interface IVideo {
     title: string
     uploadDate: string
 }
+
+export interface IVideoPlaySettings {
+    muted: boolean
+    volume: number
+    loop: boolean
+}

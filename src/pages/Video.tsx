@@ -1,24 +1,23 @@
-import { Card } from "../components/UI"
 import { useEffect, useRef, useState } from "react"
-import { IVideo } from "../interfaces/Video"
+import { IVideo, IVideoPlaySettings } from "../interfaces/Video"
 
-export const Video = ({ video }: { video: IVideo }) => {
+const INIT_VIDEO_SETTINGS = {
+  muted: false,
+  volume: 1,
+  loop: true
+}
+
+export const Video = ({ video, settings = INIT_VIDEO_SETTINGS }: { video: IVideo, settings?: IVideoPlaySettings }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
-  const [videoVolume, setVideoVolume] = useState(1)
-  const [isVideoMuted, setIsVideoMuted] = useState(false)
-  const [loopVideo, setLoopVideo] = useState(false)
+  
+  const [videoVolume, setVideoVolume] = useState(settings.volume)
+  const [isVideoMuted, setIsVideoMuted] = useState(settings.muted)
+  const [loopVideo, setLoopVideo] = useState(settings.loop)
 
   useEffect(() => {
-    init()
-  }, [])
-
-  const init = () => {
-    if (videoRef.current) {
-      // Set video initial volume
-      setVideoVolume(videoRef.current.volume)
-    }
-  }
+    if (videoRef.current) videoRef.current!.volume = videoVolume
+  }, [videoVolume])
 
   const play = () => {
     videoRef.current?.play()
@@ -42,14 +41,17 @@ export const Video = ({ video }: { video: IVideo }) => {
     setIsVideoMuted(false)
   }
 
+  const updateVolume = (e: React.MouseEvent<HTMLInputElement>) => {
+    setVideoVolume(Number(e.currentTarget.value))
+  }
+
   const getVolumeIcon = () => {
     if (isVideoMuted) return <i className="fa-duotone fa-volume-slash" onClick={unMmuteVideo}></i>
-    switch (videoVolume) {
-      case 1:
-        return <i className="fa-duotone fa-volume-high" onClick={muteVideo}></i>
-      default:
-        return ''
-    }
+    
+    if (videoVolume === 0) return <i className="fa-duotone fa-volume-slash" onClick={unMmuteVideo}></i>
+    else if (videoVolume > 0 && videoVolume <= 0.4) return <i className="fa-duotone fa-volume-low" onClick={muteVideo}></i>
+    else if (videoVolume > 0.4 && videoVolume <= 0.8) return <i className="fa-duotone fa-volume-medium" onClick={muteVideo}></i>
+    else if (videoVolume > 0.8) return <i className="fa-duotone fa-volume-high" onClick={muteVideo}></i>
   }
 
   return (
@@ -89,6 +91,10 @@ export const Video = ({ video }: { video: IVideo }) => {
               onClick={(e: React.MouseEvent<HTMLInputElement>) => {
                 e.stopPropagation()
               }}
+              min={0}
+              max={1}
+              step={0.01}
+              onInput={updateVolume}
             />
           </span>
         </div>

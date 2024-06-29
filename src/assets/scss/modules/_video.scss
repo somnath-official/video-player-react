@@ -71,6 +71,11 @@
 
                 i {
                     cursor: pointer;
+                    width: 25px;
+                    height: 25px;
+                    display: flex;
+                    justify-content: center;
+                    align-items: center;
                 }
 
                 input[type='range'] {
