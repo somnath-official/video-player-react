@@ -47,20 +47,23 @@
             right: 0px;
             z-index: 1;
             padding: 8px 16px;
+            display: flex;
+            align-items: center;
+            column-gap: 16px;
+
+            .play-pause-controller {
+                width: 32px;
+                height: 32px;
+                display: flex;
+                border: 1px solid;
+                border-radius: 50%;
+                justify-content: center;
+                align-items: center;
+            }
 
             i.fa {
                 cursor: pointer;
                 color: white;
-                // font-size: 18px;
-
-                // &.fa-play,
-                // &.fa-pause {
-                //     font-size: 24px;
-                // }
-            }
-            
-            .volume-controller {
-                margin-left: 8px;
             }
         }
 

@@ -53,43 +53,41 @@ export const Video = ({ video }: { video: IVideo }) => {
   }
 
   return (
-    <Card>
-      <div className="video-player-container">
-        <video
-          ref={videoRef}
-          className="video-player"
-          onEnded={() => {
-            if (loopVideo) play()
-            else pause()
-          }}
-        >
-          <source src={video.url} type={video.type}></source>
-        </video>
+    <div className="video-player-container">
+      <video
+        ref={videoRef}
+        className="video-player"
+        onEnded={() => {
+          if (loopVideo) play()
+          else pause()
+        }}
+      >
+        <source src={video.url} type={video.type}></source>
+      </video>
 
-        <div
-          className="video-controller"
-          onClick={() => {
-            if (!isVideoPlaying) play()
-            else pause()
-          }}
-        >
-          <div className="backdrop"></div>
-          <div className="controllers">
-            <span className="play-pause-controller">
-              {
-                !isVideoPlaying
-                  ? <i className="fa fa-play" onClick={play}></i>
-                  : <i className="fa fa-pause" onClick={pause}></i>
-              }
-            </span>
+      <div
+        className="video-controller"
+        onClick={() => {
+          if (!isVideoPlaying) play()
+          else pause()
+        }}
+      >
+        <div className="backdrop"></div>
+        <div className="controllers">
+          <span className="play-pause-controller">
+            {
+              !isVideoPlaying
+                ? <i className="fa fa-play" onClick={play}></i>
+                : <i className="fa fa-pause" onClick={pause}></i>
+            }
+          </span>
 
-            <span className="volume-controller">
-              { getVolumeIcon() }
-            </span>
-          </div>
+          <span className="volume-controller">
+            {getVolumeIcon()}
+          </span>
         </div>
-        
       </div>
-    </Card>
+
+    </div>
   )
 }
