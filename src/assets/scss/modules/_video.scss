@@ -25,7 +25,7 @@
         left: 0px;
         right: 0px;
         transition: opacity 0.5s ease-out;
-        opacity: 0;
+        // opacity: 0;
 
         .backdrop {
             height: 100%;
@@ -78,12 +78,63 @@
                     width: 0px;
                     opacity: 0;
                     transition: width 0.2s ease-in, opacity 0.2s ease-in;
+
+                    -webkit-appearance: none;
+                    appearance: none;
+                    background: transparent;
+
+                    &:focus {
+                        outline: none;
+                    }
+
+                    &::-webkit-slider-runnable-track {
+                        background-color: #6858df;
+                        border-radius: 8px;
+                        height: 4px;
+                    }
+
+                    &::-webkit-slider-thumb {
+                        -webkit-appearance: none;
+                        /* Override default look */
+                        appearance: none;
+                        margin-top: -4px;
+                        /* Centers thumb on the track */
+                        background-color: #ffffff;
+                        border-radius: 50%;
+                        height: 12px;
+                        width: 12px;
+                    }
+
+                    &:focus::-webkit-slider-thumb {
+                        outline: 1px solid #ffffff;
+                        outline-offset: 0.125rem;
+                    }
+
+                    &::-moz-range-track {
+                        background-color: #6858df;
+                        border-radius: 8px;
+                        height: 4px;
+                    }
+
+                    &::-moz-range-thumb {
+                        background-color: #ffffff;
+                        border: none;
+                        /*Removes extra border that FF applies*/
+                        border-radius: 50%;
+                        height: 12px;
+                        width: 12px;
+                    }
+
+                    &:focus::-moz-range-thumb {
+                        outline: 1px solid #ffffff;
+                        outline-offset: 0.125rem;
+                    }
                 }
 
                 &:hover {
                     background-color: #000000a1;
                     transition: background-color 0.1s ease-out;
-                    
+
                     input[type='range'] {
                         margin: 0px 0px 0px 4px;
                         transition: width 0.2s ease-out, opacity 0.2s ease-out;

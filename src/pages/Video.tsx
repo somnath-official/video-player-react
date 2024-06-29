@@ -7,7 +7,7 @@ export const Video = ({ video }: { video: IVideo }) => {
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const [videoVolume, setVideoVolume] = useState(1)
   const [isVideoMuted, setIsVideoMuted] = useState(false)
-  const [loopVideo, setLoopVideo] = useState(true)
+  const [loopVideo, setLoopVideo] = useState(false)
 
   useEffect(() => {
     init()
