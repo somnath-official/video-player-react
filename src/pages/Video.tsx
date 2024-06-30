@@ -17,13 +17,16 @@ export const Video = ({
   settings?: IVideoPlaySettings
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null)
+  const videoDurationRef = useRef<HTMLInputElement | null>(null)
+  const volumeRef = useRef<HTMLInputElement | null>(null)
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const [videoDuration, setVideoDuration] = useState(0)
+  const [isVideoEnded, setVideoEnded] = useState(false)
+  const [isVideoLoading, setVideoLoading] = useState(false)
 
   const [videoVolume, setVideoVolume] = useState(settings.volume)
   const [isVideoMuted, setIsVideoMuted] = useState(settings.muted)
   const [loopVideo, setLoopVideo] = useState(settings.loop)
-  const [isVideoEnded, setVideoEnded] = useState(false)
   const [time, setTime] = useState(settings.time)
 
   useEffect(() => {
@@ -32,7 +35,27 @@ export const Video = ({
 
   useEffect(() => {
     if (videoRef.current) videoRef.current!.volume = videoVolume
+
+    if (volumeRef.current) {
+      const min = +volumeRef.current.min
+      const max = +volumeRef.current.max
+      const size = (videoVolume - min) / (max - min) * 100;
+      if (size) {
+        volumeRef.current.style.setProperty('--volume-range-size', `${size}%`)
+      }
+    }
   }, [videoVolume])
+
+  useEffect(() => {
+    if (videoDurationRef.current) {
+      const min = +videoDurationRef.current.min
+      const max = +videoDurationRef.current.max
+      const size = (time - min) / (max - min) * 100;
+      if (size) {
+        videoDurationRef.current.style.setProperty('--video-duration-bg-size', `${size}%`)
+      }
+    }
+  }, [time])
 
   const play = () => {
     videoRef.current?.play()
@@ -48,6 +71,9 @@ export const Video = ({
   const replay = () => {
     if (videoRef.current) {
       videoRef.current!.currentTime = 0
+      if (videoDurationRef.current) {
+        videoDurationRef.current.style.setProperty('--video-duration-bg-size', `0%`)
+      }
       play()
     }
   }
@@ -86,6 +112,13 @@ export const Video = ({
 
   return (
     <div className="video-player-container">
+      {
+        isVideoLoading &&
+        <div className="loading">
+          <div className="loader"></div>
+        </div>
+      }
+
       <video
         ref={videoRef}
         className="video-player"
@@ -104,6 +137,8 @@ export const Video = ({
           const d = Math.floor(e.currentTarget.currentTime)
           setTime(d)
         }}
+        onLoadStart={() => setVideoLoading(true)}
+        onLoadedData={() => setVideoLoading(false)}
       >
         <source src={video.url} type={video.type}></source>
       </video>
@@ -111,7 +146,8 @@ export const Video = ({
       <div
         className="video-controller"
         onClick={() => {
-          if (!isVideoPlaying) play()
+          if (isVideoEnded) replay()
+          else if (!isVideoPlaying) play()
           else pause()
         }}
       >
@@ -124,6 +160,7 @@ export const Video = ({
         >
           <div className="video-duration-indicator">
             <input
+              ref={videoDurationRef}
               type="range"
               onClick={(e: React.MouseEvent<HTMLInputElement>) => {
                 e.stopPropagation()
@@ -132,8 +169,11 @@ export const Video = ({
               min={0}
               max={Math.floor(videoDuration)}
               step={0.1}
-              onMouseDown={pause}
-              onMouseUp={play}
+              onInput={(e: React.MouseEvent<HTMLInputElement>) => {
+                const time = Math.floor(Number(e.currentTarget.value))
+                videoRef.current!.currentTime = time
+                setTime(time)
+              }}
             />
           </div>
 
@@ -152,6 +192,7 @@ export const Video = ({
             <span className="volume-controller" onClick={(e: React.MouseEvent<HTMLSpanElement>) => e.stopPropagation()}>
               {getVolumeIcon()}
               <input
+                ref={volumeRef}
                 type="range"
                 onClick={(e: React.MouseEvent<HTMLInputElement>) => {
                   e.stopPropagation()
@@ -169,7 +210,6 @@ export const Video = ({
           </div>
         </div>
       </div>
-
     </div>
   )
 }

@@ -5,12 +5,6 @@
     width: 840px;
     height: 400px;
 
-    video.video-player {
-        width: 100%;
-        height: 100%;
-        aspect-ratio: 16/4;
-    }
-
     &:hover {
         .video-controller {
             opacity: 1;
@@ -20,6 +14,59 @@
         .backdrop {
             transition: height 0.5s ease-out;
         }
+    }
+
+    .loading {
+        background-color: #4b4b4ba3;
+        position: absolute;
+        left: 0;
+        right: 0;
+        top: 0;
+        bottom: 0;
+        z-index: 2;
+        cursor: default;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+
+        .loader {
+            width: 25px;
+            aspect-ratio: 1;
+            display: grid;
+            border-radius: 50%;
+            background:
+                linear-gradient(0deg, rgba(255, 255, 255, 0.5) 30%, #ffffff00 0 70%, rgb(255, 255, 255) 0) 50%/8% 100%,
+                linear-gradient(90deg, rgba(255, 255, 255, 0.25) 30%, #ffffff00 0 70%, rgba(255, 255, 255, 0.75) 0) 50%/100% 8%;
+            background-repeat: no-repeat;
+            animation: l23 1s infinite steps(12);
+        }
+
+        .loader::before,
+        .loader::after {
+            content: "";
+            grid-area: 1/1;
+            border-radius: 50%;
+            background: inherit;
+            opacity: 0.915;
+            transform: rotate(30deg);
+        }
+
+        .loader::after {
+            opacity: 0.83;
+            transform: rotate(60deg);
+        }
+
+        @keyframes l23 {
+            100% {
+                transform: rotate(1turn)
+            }
+        }
+    }
+
+    video.video-player {
+        width: 100%;
+        height: 100%;
+        aspect-ratio: 16/4;
     }
 
     .video-controller {
@@ -71,7 +118,9 @@
                     }
 
                     &::-webkit-slider-runnable-track {
-                        background-color: #6858df;
+                        background: linear-gradient(to right, #6858df, #6858df), #ffffff80;
+                        background-size: var(--video-duration-bg-size, 0%) 100%;
+                        background-repeat: no-repeat;
                         border-radius: 8px;
                         height: 4px;
                     }
@@ -88,8 +137,14 @@
                         width: 12px;
                     }
 
-                    &::-moz-range-track {
+                    &::-moz-range-progress {
                         background-color: #6858df;
+                        border-radius: 8px;
+                        height: 4px;
+                    }
+
+                    &::-moz-range-track {
+                        background-color: #ffffff;
                         border-radius: 8px;
                         height: 4px;
                     }
@@ -160,27 +215,35 @@
                         }
 
                         &::-webkit-slider-runnable-track {
-                            background-color: #6858df;
+                            background: linear-gradient(to right, #c9c9c9, #c9c9c9), #414049;
+                            background-size: var(--volume-range-size, 0%) 100%;
+                            background-repeat: no-repeat;
                             border-radius: 8px;
-                            height: 4px;
+                            height: 2px;
                         }
 
                         &::-webkit-slider-thumb {
                             -webkit-appearance: none;
                             /* Override default look */
                             appearance: none;
-                            margin-top: -4px;
+                            margin-top: -3px;
                             /* Centers thumb on the track */
                             background-color: #ffffff;
                             border-radius: 50%;
-                            height: 12px;
-                            width: 12px;
+                            height: 8px;
+                            width: 8px;
+                        }
+
+                        &::-moz-range-progress {
+                            background-color: #c9c9c9;
+                            border-radius: 8px;
+                            height: 2px;
                         }
 
                         &::-moz-range-track {
-                            background-color: #6858df;
+                            background-color: #414049;
                             border-radius: 8px;
-                            height: 4px;
+                            height: 2px;
                         }
 
                         &::-moz-range-thumb {
@@ -188,8 +251,8 @@
                             border: none;
                             /*Removes extra border that FF applies*/
                             border-radius: 50%;
-                            height: 12px;
-                            width: 12px;
+                            height: 8px;
+                            width: 8px;
                         }
                     }
 
