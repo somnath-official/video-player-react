@@ -11,4 +11,5 @@ export interface IVideoPlaySettings {
     muted: boolean
     volume: number
     loop: boolean
+    time: number
 }

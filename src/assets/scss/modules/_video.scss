@@ -2,19 +2,23 @@
     position: relative;
     display: flex;
     cursor: pointer;
+    width: 840px;
+    height: 400px;
 
     video.video-player {
         width: 100%;
+        height: 100%;
+        aspect-ratio: 16/4;
     }
 
     &:hover {
         .video-controller {
             opacity: 1;
-            transition: opacity 0s ease-out;
+            transition: opacity 0.5s ease-out;
         }
 
         .backdrop {
-            transition: height 0s ease-out;
+            transition: height 0.5s ease-out;
         }
     }
 
@@ -24,8 +28,8 @@
         bottom: 0px;
         left: 0px;
         right: 0px;
-        transition: opacity 0.5s ease-out;
-        // opacity: 0;
+        transition: opacity 1s ease-out;
+        opacity: 0;
 
         .backdrop {
             height: 100%;
@@ -48,41 +52,15 @@
             z-index: 1;
             padding: 8px 16px;
             display: flex;
-            align-items: center;
-            column-gap: 16px;
+            flex-direction: column;
+            row-gap: 4px;
+            cursor: default;
 
-            .play-pause-controller {
-                width: 32px;
-                height: 32px;
-                display: flex;
-                border: 1px solid;
-                border-radius: 50%;
-                justify-content: center;
-                align-items: center;
-            }
-
-            .volume-controller {
-                padding: 8px 8px;
-                display: flex;
-                align-items: center;
-                border-radius: 16px;
-                transition: background-color 0.1s ease-in;
-                cursor: default;
-
-                i {
-                    cursor: pointer;
-                    width: 25px;
-                    height: 25px;
-                    display: flex;
-                    justify-content: center;
-                    align-items: center;
-                }
-
+            .video-duration-indicator {
                 input[type='range'] {
                     margin: 0px;
-                    width: 0px;
-                    opacity: 0;
-                    transition: width 0.2s ease-in, opacity 0.2s ease-in;
+                    width: 100%;
+                    cursor: pointer;
 
                     -webkit-appearance: none;
                     appearance: none;
@@ -110,11 +88,6 @@
                         width: 12px;
                     }
 
-                    &:focus::-webkit-slider-thumb {
-                        outline: 1px solid #ffffff;
-                        outline-offset: 0.125rem;
-                    }
-
                     &::-moz-range-track {
                         background-color: #6858df;
                         border-radius: 8px;
@@ -129,26 +102,114 @@
                         height: 12px;
                         width: 12px;
                     }
+                }
+            }
 
-                    &:focus::-moz-range-thumb {
-                        outline: 1px solid #ffffff;
-                        outline-offset: 0.125rem;
+            .action-menus {
+                display: flex;
+                align-items: center;
+                column-gap: 16px;
+
+                .play-pause-controller {
+                    width: 32px;
+                    height: 32px;
+                    display: flex;
+                    border-radius: 50%;
+                    justify-content: center;
+                    align-items: center;
+                    background-color: #0000002e;
+                    transition: background-color 0.1s ease-out;
+                    cursor: pointer;
+
+                    &:hover {
+                        background-color: #0000004d;
+                        transition: background-color 0.1s ease-in;
                     }
                 }
 
-                &:hover {
-                    background-color: #000000a1;
-                    transition: background-color 0.1s ease-out;
+                .volume-controller {
+                    padding: 8px 8px;
+                    display: flex;
+                    align-items: center;
+                    border-radius: 16px;
+                    transition: background-color 0.1s ease-in;
+                    cursor: default;
+
+                    i {
+                        cursor: pointer;
+                        width: 25px;
+                        height: 25px;
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                    }
 
                     input[type='range'] {
-                        margin: 0px 0px 0px 4px;
-                        transition: width 0.2s ease-out, opacity 0.2s ease-out;
-                        width: 80px;
-                        opacity: 1;
+                        margin: 0px;
+                        width: 0px;
+                        opacity: 0;
+                        transition: width 0.2s ease-in, opacity 0.2s ease-in;
+                        cursor: pointer;
+
+                        -webkit-appearance: none;
+                        appearance: none;
+                        background: transparent;
+
+                        &:focus {
+                            outline: none;
+                        }
+
+                        &::-webkit-slider-runnable-track {
+                            background-color: #6858df;
+                            border-radius: 8px;
+                            height: 4px;
+                        }
+
+                        &::-webkit-slider-thumb {
+                            -webkit-appearance: none;
+                            /* Override default look */
+                            appearance: none;
+                            margin-top: -4px;
+                            /* Centers thumb on the track */
+                            background-color: #ffffff;
+                            border-radius: 50%;
+                            height: 12px;
+                            width: 12px;
+                        }
+
+                        &::-moz-range-track {
+                            background-color: #6858df;
+                            border-radius: 8px;
+                            height: 4px;
+                        }
+
+                        &::-moz-range-thumb {
+                            background-color: #ffffff;
+                            border: none;
+                            /*Removes extra border that FF applies*/
+                            border-radius: 50%;
+                            height: 12px;
+                            width: 12px;
+                        }
                     }
+
+                    &:hover {
+                        background-color: #000000a1;
+                        transition: background-color 0.1s ease-out;
+
+                        input[type='range'] {
+                            margin: 0px 0px 0px 4px;
+                            transition: width 0.2s ease-out, opacity 0.2s ease-out;
+                            width: 80px;
+                            opacity: 1;
+                        }
+                    }
+                }
+
+                .video-time-duration {
+                    font-size: 14px;
                 }
             }
         }
-
     }
 }
