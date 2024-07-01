@@ -1,37 +1,37 @@
 import { useEffect, useRef, useState } from "react"
-import { IVideo, IVideoPlaySettings } from "../interfaces/Video"
+import { IVideo } from "../interfaces/Video"
 import { toHumanRaedableFormat } from "../utils/time"
-
-const INIT_VIDEO_SETTINGS = {
-  muted: false,
-  volume: 1,
-  loop: false,
-  time: 0,
-}
 
 export const Video = ({
   video,
-  settings = INIT_VIDEO_SETTINGS
+  muted = false,
+  volume = 1,
+  loop = false,
+  playbackTime = 0,
 }: {
   video: IVideo,
-  settings?: IVideoPlaySettings
+  muted?: boolean,
+  volume?: number,
+  loop?: boolean,
+  playbackTime?: number,
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const videoDurationRef = useRef<HTMLInputElement | null>(null)
   const volumeRef = useRef<HTMLInputElement | null>(null)
+
+  const [videoVolume, setVideoVolume] = useState(volume)
+  const [isVideoMuted, setIsVideoMuted] = useState(muted)
+  const [loopVideo, setLoopVideo] = useState(loop)
+  const [time, setTime] = useState(playbackTime)
+
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const [videoDuration, setVideoDuration] = useState(0)
   const [isVideoEnded, setVideoEnded] = useState(false)
   const [isVideoLoading, setVideoLoading] = useState(false)
 
-  const [videoVolume, setVideoVolume] = useState(settings.volume)
-  const [isVideoMuted, setIsVideoMuted] = useState(settings.muted)
-  const [loopVideo, setLoopVideo] = useState(settings.loop)
-  const [time, setTime] = useState(settings.time)
-
   useEffect(() => {
-    if (settings.time && videoRef.current) videoRef.current.currentTime = settings.time
-  }, [settings.time])
+    if (playbackTime && videoRef.current) videoRef.current.currentTime = playbackTime
+  }, [playbackTime])
 
   useEffect(() => {
     if (videoRef.current) videoRef.current!.volume = videoVolume
