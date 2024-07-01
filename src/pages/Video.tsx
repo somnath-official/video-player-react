@@ -196,6 +196,7 @@ export const Video = ({
           else pause()
         }}
       >
+        <div className="video-title" onClick={(e) => e.stopPropagation()}>{video.title}</div>
         <div className="backdrop"></div>
         <div
           className="controllers"
