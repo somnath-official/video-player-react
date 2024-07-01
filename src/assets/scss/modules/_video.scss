@@ -16,6 +16,10 @@
         }
     }
 
+    &.thumbnail {
+        cursor: default !important;
+    }
+
     .loading {
         background-color: #4b4b4ba3;
         position: absolute;

@@ -8,12 +8,14 @@ export const Video = ({
   volume = 1,
   loop = false,
   playbackTime = 0,
+  isThumbnailVideo = false,
 }: {
-  video: IVideo,
-  muted?: boolean,
-  volume?: number,
-  loop?: boolean,
-  playbackTime?: number,
+  video: IVideo
+  muted?: boolean
+  volume?: number
+  loop?: boolean
+  playbackTime?: number
+  isThumbnailVideo: boolean
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const videoDurationRef = useRef<HTMLInputElement | null>(null)
@@ -68,25 +70,31 @@ export const Video = ({
         setVideoFullScreenStatus(prev => !prev)
       })
 
-      videoPlayerContainerRef.current.onmousemove = (() => {
-        videoPlayerContainerRef.current?.classList.add('hover')
-        if (t != null) clearTimeout(t)
+      if (isThumbnailVideo) videoPlayerContainerRef.current.classList.add('thumbnail')
 
-        t = setTimeout(() => {
-          videoPlayerContainerRef.current?.classList.remove('hover')
-        }, 1000)
+      videoPlayerContainerRef.current.onmousemove = (() => {
+        if (!isThumbnailVideo && !isVideoLoading) {
+          videoPlayerContainerRef.current?.classList.add('hover')
+          if (t != null) clearTimeout(t)
+  
+          t = setTimeout(() => {
+            videoPlayerContainerRef.current?.classList.remove('hover')
+          }, 1000)
+        }
       })
     }
 
     return () => {
       if (t != null) clearTimeout(t)
     }
-  }, [])
+  }, [isThumbnailVideo, isVideoLoading])
 
   const play = () => {
-    videoRef.current?.play()
-    setIsVideoPlaying(true)
-    setVideoEnded(false)
+    if (!isThumbnailVideo) {
+      videoRef.current?.play()
+      setIsVideoPlaying(true)
+      setVideoEnded(false)
+    }
   }
 
   const pause = () => {
