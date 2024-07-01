@@ -18,6 +18,7 @@ export const Video = ({
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const videoDurationRef = useRef<HTMLInputElement | null>(null)
   const volumeRef = useRef<HTMLInputElement | null>(null)
+  const videoPlayerContainerRef = useRef<HTMLDivElement | null>(null)
 
   const [videoVolume, setVideoVolume] = useState(volume)
   const [videoLastVolume, setVideoLastVolume] = useState(volume)
@@ -29,6 +30,7 @@ export const Video = ({
   const [videoDuration, setVideoDuration] = useState(0)
   const [isVideoEnded, setVideoEnded] = useState(false)
   const [isVideoLoading, setVideoLoading] = useState(false)
+  const [videoFullScreenStatus, setVideoFullScreenStatus] = useState(false)
 
   useEffect(() => {
     if (playbackTime && videoRef.current) videoRef.current.currentTime = playbackTime
@@ -57,6 +59,14 @@ export const Video = ({
       }
     }
   }, [time])
+
+  useEffect(() => {
+    if (videoPlayerContainerRef.current) {
+      videoPlayerContainerRef.current!.onfullscreenchange = (() => {
+        setVideoFullScreenStatus(prev => !prev)
+      })
+    }
+  }, [])
 
   const play = () => {
     videoRef.current?.play()
@@ -103,6 +113,14 @@ export const Video = ({
     setVideoVolume(Number(e.currentTarget.value))
   }
 
+  const enterFullScreen = () => {
+    if (videoPlayerContainerRef.current) videoPlayerContainerRef.current.requestFullscreen()
+  }
+
+  const exitFullScreen = () => {
+    if (videoPlayerContainerRef.current) document.exitFullscreen()
+  }
+
   const getPlayPauseIcon = () => {
     if (isVideoEnded) return <i className="fa fa-rotate-forward"></i>
 
@@ -120,7 +138,10 @@ export const Video = ({
   }
 
   return (
-    <div className="video-player-container">
+    <div
+      className="video-player-container"
+      ref={videoPlayerContainerRef}
+    >
       {
         isVideoLoading &&
         <div className="loading">
@@ -187,38 +208,51 @@ export const Video = ({
           </div>
 
           <div className="action-menus">
-            <span
-              className="play-pause-controller"
-              onClick={() => {
-                if (isVideoEnded) replay()
-                else if (isVideoPlaying) pause()
-                else play()
-              }}
-            >
-              {getPlayPauseIcon()}
-            </span>
-
-            <span
-              className="volume-controller"
-              onClick={(e: React.MouseEvent<HTMLSpanElement>) => e.stopPropagation()}
-            >
-              {getVolumeIcon()}
-              <input
-                ref={volumeRef}
-                type="range"
-                onClick={(e: React.MouseEvent<HTMLInputElement>) => {
-                  e.stopPropagation()
+            <div className="left">
+              {/* Play Pause */}
+              <span
+                className="play-pause-controller"
+                onClick={() => {
+                  if (isVideoEnded) replay()
+                  else if (isVideoPlaying) pause()
+                  else play()
                 }}
-                value={videoVolume}
-                min={0}
-                max={1}
-                step={0.01}
-                onInput={updateVolume}
-              />
-            </span>
+              >
+                {getPlayPauseIcon()}
+              </span>
 
-            <div className="video-time-duration">
-              <span>{time ? toHumanRaedableFormat(time) : '0:00'}</span> / <span>{videoDuration ? toHumanRaedableFormat(videoDuration) : '0:00'}</span>
+              {/* Volume Control */}
+              <span
+                className="volume-controller"
+                onClick={(e: React.MouseEvent<HTMLSpanElement>) => e.stopPropagation()}
+              >
+                {getVolumeIcon()}
+                <input
+                  ref={volumeRef}
+                  type="range"
+                  onClick={(e: React.MouseEvent<HTMLInputElement>) => {
+                    e.stopPropagation()
+                  }}
+                  value={videoVolume}
+                  min={0}
+                  max={1}
+                  step={0.01}
+                  onInput={updateVolume}
+                />
+              </span>
+
+              {/* Vide Play Time */}
+              <div className="video-time-duration">
+                <span>{time ? toHumanRaedableFormat(time) : '0:00'}</span> / <span>{videoDuration ? toHumanRaedableFormat(videoDuration) : '0:00'}</span>
+              </div>
+            </div>
+            <div className="right">
+              <i className="fa fa-cog"></i>
+              {
+                videoFullScreenStatus
+                ? <i className="fa fa-arrow-down-left-and-arrow-up-right-to-center" onClick={exitFullScreen}></i>
+                : <i className="fa fa-arrow-up-right-and-arrow-down-left-from-center" onClick={enterFullScreen}></i>
+              }
             </div>
           </div>
         </div>
