@@ -20,6 +20,7 @@ export const Video = ({
   const volumeRef = useRef<HTMLInputElement | null>(null)
 
   const [videoVolume, setVideoVolume] = useState(volume)
+  const [videoLastVolume, setVideoLastVolume] = useState(volume)
   const [isVideoMuted, setIsVideoMuted] = useState(muted)
   const [loopVideo, setLoopVideo] = useState(loop)
   const [time, setTime] = useState(playbackTime)
@@ -40,7 +41,7 @@ export const Video = ({
       const min = +volumeRef.current.min
       const max = +volumeRef.current.max
       const size = (videoVolume - min) / (max - min) * 100;
-      if (size) {
+      if (size >= 0) {
         volumeRef.current.style.setProperty('--volume-range-size', `${size}%`)
       }
     }
@@ -82,15 +83,23 @@ export const Video = ({
     e.stopPropagation()
     videoRef.current!.muted = true
     setIsVideoMuted(true)
+    setVideoVolume(0)
   }
 
   const unMmuteVideo = (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation()
     videoRef.current!.muted = false
     setIsVideoMuted(false)
+    if (videoLastVolume) setVideoVolume(videoLastVolume)
+    else setVideoVolume(1)
   }
 
   const updateVolume = (e: React.MouseEvent<HTMLInputElement>) => {
+    if (Number(e.currentTarget.value)) {
+      videoRef.current!.muted = false
+      setIsVideoMuted(false)
+    }
+    setVideoLastVolume(Number(e.currentTarget.value))
     setVideoVolume(Number(e.currentTarget.value))
   }
 
@@ -197,6 +206,7 @@ export const Video = ({
                 onClick={(e: React.MouseEvent<HTMLInputElement>) => {
                   e.stopPropagation()
                 }}
+                value={videoVolume}
                 min={0}
                 max={1}
                 step={0.01}
