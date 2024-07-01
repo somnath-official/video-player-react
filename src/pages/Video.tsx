@@ -198,7 +198,10 @@ export const Video = ({
               {getPlayPauseIcon()}
             </span>
 
-            <span className="volume-controller" onClick={(e: React.MouseEvent<HTMLSpanElement>) => e.stopPropagation()}>
+            <span
+              className="volume-controller"
+              onClick={(e: React.MouseEvent<HTMLSpanElement>) => e.stopPropagation()}
+            >
               {getVolumeIcon()}
               <input
                 ref={volumeRef}
@@ -215,7 +218,7 @@ export const Video = ({
             </span>
 
             <div className="video-time-duration">
-              {time ? toHumanRaedableFormat(time) : '0:00'}/{videoDuration ? toHumanRaedableFormat(videoDuration) : '0:00'}
+              <span>{time ? toHumanRaedableFormat(time) : '0:00'}</span> / <span>{videoDuration ? toHumanRaedableFormat(videoDuration) : '0:00'}</span>
             </div>
           </div>
         </div>
