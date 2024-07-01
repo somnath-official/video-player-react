@@ -5,7 +5,7 @@
     width: 840px;
     height: 400px;
 
-    &:hover {
+    &.hover {
         .video-controller {
             opacity: 1;
             transition: opacity 0.5s ease-out;
@@ -76,7 +76,7 @@
         bottom: 0px;
         left: 0px;
         right: 0px;
-        transition: opacity 1s ease-out;
+        transition: opacity 0.5s ease-out;
         opacity: 0;
 
         .backdrop {
@@ -87,9 +87,9 @@
             right: 0px;
             left: 0px;
             z-index: 0;
-            background-color: #0000002d;
+            background-color: #00000071;
 
-            transition: height 1s ease-out;
+            transition: height 0.5s ease-out;
         }
 
         .controllers {

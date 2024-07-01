@@ -61,10 +61,25 @@ export const Video = ({
   }, [time])
 
   useEffect(() => {
+    let t: number | null = null
+
     if (videoPlayerContainerRef.current) {
       videoPlayerContainerRef.current!.onfullscreenchange = (() => {
         setVideoFullScreenStatus(prev => !prev)
       })
+
+      videoPlayerContainerRef.current.onmousemove = (() => {
+        videoPlayerContainerRef.current?.classList.add('hover')
+        if (t != null) clearTimeout(t)
+
+        t = setTimeout(() => {
+          videoPlayerContainerRef.current?.classList.remove('hover')
+        }, 1000)
+      })
+    }
+
+    return () => {
+      if (t != null) clearTimeout(t)
     }
   }, [])
 
