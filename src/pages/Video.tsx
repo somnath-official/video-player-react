@@ -15,24 +15,53 @@ export const Video = ({
   volume?: number
   loop?: boolean
   playbackTime?: number
-  isThumbnailVideo: boolean
+  isThumbnailVideo?: boolean
 }) => {
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const videoDurationRef = useRef<HTMLInputElement | null>(null)
   const volumeRef = useRef<HTMLInputElement | null>(null)
   const videoPlayerContainerRef = useRef<HTMLDivElement | null>(null)
 
-  const [videoVolume, setVideoVolume] = useState(volume)
-  const [videoLastVolume, setVideoLastVolume] = useState(volume)
-  const [isVideoMuted, setIsVideoMuted] = useState(muted)
-  const [loopVideo, setLoopVideo] = useState(loop)
-  const [time, setTime] = useState(playbackTime)
-
+  const [videoVolume, setVideoVolume] = useState(1)
+  const [videoLastVolume, setVideoLastVolume] = useState(1)
+  const [isVideoMuted, setIsVideoMuted] = useState(false)
+  const [loopVideo, setLoopVideo] = useState(false)
+  const [time, setTime] = useState(0)
   const [isVideoPlaying, setIsVideoPlaying] = useState(false)
   const [videoDuration, setVideoDuration] = useState(0)
   const [isVideoEnded, setVideoEnded] = useState(false)
   const [isVideoLoading, setVideoLoading] = useState(false)
   const [videoFullScreenStatus, setVideoFullScreenStatus] = useState(false)
+
+  useEffect(() => {
+    const init = () => {
+      if (videoRef.current) {
+        // Volume
+        if (muted || volume <= 0) {
+          videoRef.current.muted = muted
+          setVideoVolume(0)
+        }
+        else if (volume > 1) {
+          videoRef.current.volume = 1
+          setVideoVolume(1)
+        }
+        else {
+          videoRef.current.volume = volume
+          setVideoVolume(volume)
+        }
+
+        // Video duration indicator
+        if (playbackTime && videoDuration) {
+          setTime(playbackTime)
+        }
+
+        // Loop
+        videoRef.current.loop = loop
+      }
+    }
+
+    init()
+  }, [loop, muted, playbackTime, videoDuration, volume])
 
   useEffect(() => {
     if (playbackTime && videoRef.current) videoRef.current.currentTime = playbackTime
@@ -104,10 +133,10 @@ export const Video = ({
 
   const replay = () => {
     if (videoRef.current) {
-      videoRef.current!.currentTime = 0
       if (videoDurationRef.current) {
         videoDurationRef.current.style.setProperty('--video-duration-bg-size', `0%`)
       }
+      videoRef.current!.currentTime = 0
       play()
     }
   }
@@ -176,7 +205,7 @@ export const Video = ({
         ref={videoRef}
         className="video-player"
         onEnded={() => {
-          if (loopVideo) play()
+          if (loopVideo) replay()
           else {
             setVideoEnded(true)
             pause()
@@ -206,19 +235,12 @@ export const Video = ({
       >
         <div className="video-title" onClick={(e) => e.stopPropagation()}>{video.title}</div>
         <div className="backdrop"></div>
-        <div
-          className="controllers"
-          onClick={(e: React.MouseEvent<HTMLInputElement>) => {
-            e.stopPropagation()
-          }}
-        >
+        <div className="controllers" onClick={(e) => e.stopPropagation()}>
           <div className="video-duration-indicator">
             <input
               ref={videoDurationRef}
               type="range"
-              onClick={(e: React.MouseEvent<HTMLInputElement>) => {
-                e.stopPropagation()
-              }}
+              onClick={(e) => e.stopPropagation()}
               value={time}
               min={0}
               max={Math.floor(videoDuration)}
