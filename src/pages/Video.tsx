@@ -33,6 +33,7 @@ export const Video = ({
   const [isVideoLoading, setVideoLoading] = useState(false)
   const [videoFullScreenStatus, setVideoFullScreenStatus] = useState(false)
 
+  // Initialize parameters
   useEffect(() => {
     const init = () => {
       if (videoRef.current) {
@@ -218,6 +219,11 @@ export const Video = ({
         onTimeUpdate={(e) => {
           const d = Math.floor(e.currentTarget.currentTime)
           setTime(d)
+
+          const buffered = e.currentTarget.buffered
+          for (let i=0; i<buffered.length; i++) {
+            // console.log({start: buffered.start(i), end: buffered.end(i)})
+          }
         }}
         onLoadStart={() => setVideoLoading(true)}
         onLoadedData={() => setVideoLoading(false)}
@@ -233,8 +239,8 @@ export const Video = ({
           else pause()
         }}
       >
-        <div className="video-title" onClick={(e) => e.stopPropagation()}>{video.title}</div>
         <div className="backdrop"></div>
+        <div className="video-title" onClick={(e) => e.stopPropagation()}>{video.title}</div>
         <div className="controllers" onClick={(e) => e.stopPropagation()}>
           <div className="video-duration-indicator">
             <input
@@ -293,6 +299,11 @@ export const Video = ({
               </div>
             </div>
             <div className="right">
+              <i
+                className="fa fa-arrows-repeat"
+                onClick={() => setLoopVideo(prev => !prev)}
+                style={loopVideo ? {color: '#12f952'} : {}}
+              ></i>
               <i className="fa fa-cog"></i>
               {
                 videoFullScreenStatus
