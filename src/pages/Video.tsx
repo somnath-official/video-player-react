@@ -17,11 +17,13 @@ export const Video = ({
   playbackTime?: number
   isThumbnailVideo?: boolean
 }) => {
+  // Refs
   const videoRef = useRef<HTMLVideoElement | null>(null)
   const videoDurationRef = useRef<HTMLInputElement | null>(null)
   const volumeRef = useRef<HTMLInputElement | null>(null)
   const videoPlayerContainerRef = useRef<HTMLDivElement | null>(null)
 
+  // Local variables
   const [videoVolume, setVideoVolume] = useState(1)
   const [videoLastVolume, setVideoLastVolume] = useState(1)
   const [isVideoMuted, setIsVideoMuted] = useState(false)
@@ -32,87 +34,87 @@ export const Video = ({
   const [isVideoEnded, setVideoEnded] = useState(false)
   const [isVideoLoading, setVideoLoading] = useState(false)
   const [videoFullScreenStatus, setVideoFullScreenStatus] = useState(false)
+  const [videoBufferInfo, setVideoBufferInfo] = useState<{ left: string, width: string }[]>([])
 
   // Initialize parameters
   useEffect(() => {
-    const init = () => {
-      if (videoRef.current) {
-        // Volume
-        if (muted || volume <= 0) {
-          videoRef.current.muted = muted
-          setVideoVolume(0)
-        }
-        else if (volume > 1) {
-          videoRef.current.volume = 1
-          setVideoVolume(1)
-        }
-        else {
-          videoRef.current.volume = volume
-          setVideoVolume(volume)
-        }
+    if (!videoRef.current) return
 
-        // Video duration indicator
-        if (playbackTime && videoDuration) {
-          setTime(playbackTime)
-        }
-
-        // Loop
-        videoRef.current.loop = loop
+    const setInitialVideoVolume = () => {
+      if (muted || volume <= 0) {
+        setVideoVolume(0)
+        setVideoLastVolume(0)
+      }
+      else if (volume > 1) {
+        setVideoVolume(1)
+        setVideoLastVolume(1)
+      }
+      else {
+        setVideoVolume(volume)
+        setVideoLastVolume(volume)
       }
     }
 
-    init()
+    const setInitialVideoPlaybackTime = () => {
+      if (playbackTime && videoDuration) {
+        if (playbackTime > videoDuration) {
+          videoRef.current!.currentTime = videoDuration
+          setTime(videoDuration)
+        } else {
+          videoRef.current!.currentTime = playbackTime
+          setTime(playbackTime)
+        }
+      }
+    }
+
+    const setInitialLoopStatus = () => {
+      videoRef.current!.loop = loop
+    }
+
+    setInitialVideoVolume()  
+    setInitialVideoPlaybackTime()  
+    setInitialLoopStatus()
   }, [loop, muted, playbackTime, videoDuration, volume])
 
   useEffect(() => {
-    if (playbackTime && videoRef.current) videoRef.current.currentTime = playbackTime
-  }, [playbackTime])
+    if (!videoRef.current || !volumeRef.current) return
+    
+    videoRef.current.volume = videoVolume
 
-  useEffect(() => {
-    if (videoRef.current) videoRef.current!.volume = videoVolume
-
-    if (volumeRef.current) {
-      const min = +volumeRef.current.min
-      const max = +volumeRef.current.max
-      const size = (videoVolume - min) / (max - min) * 100;
-      if (size >= 0) {
-        volumeRef.current.style.setProperty('--volume-range-size', `${size}%`)
-      }
-    }
+    const max = +volumeRef.current.max
+    const size = (videoVolume * 100) / max;
+    if (size >= 0) volumeRef.current.style.setProperty('--volume-range-size', `${size}%`)
   }, [videoVolume])
 
   useEffect(() => {
-    if (videoDurationRef.current) {
-      const min = +videoDurationRef.current.min
-      const max = +videoDurationRef.current.max
-      const size = (time - min) / (max - min) * 100;
-      if (size) {
-        videoDurationRef.current.style.setProperty('--video-duration-bg-size', `${size}%`)
-      }
-    }
+    if (!videoDurationRef.current) return
+
+    const max = +videoDurationRef.current.max
+    const size = (time * 100) / max;
+    if (size >= 0) videoDurationRef.current.style.setProperty('--video-duration-bg-size', `${size}%`)
   }, [time])
 
   useEffect(() => {
     let t: number | null = null
 
-    if (videoPlayerContainerRef.current) {
-      videoPlayerContainerRef.current!.onfullscreenchange = (() => {
-        setVideoFullScreenStatus(prev => !prev)
-      })
+    if (!videoPlayerContainerRef.current) return
+    
+    videoPlayerContainerRef.current.onfullscreenchange = (() => {
+      setVideoFullScreenStatus(prev => !prev)
+    })
 
-      if (isThumbnailVideo) videoPlayerContainerRef.current.classList.add('thumbnail')
+    if (isThumbnailVideo) videoPlayerContainerRef.current.classList.add('thumbnail')
 
-      videoPlayerContainerRef.current.onmousemove = (() => {
-        if (!isThumbnailVideo && !isVideoLoading) {
-          videoPlayerContainerRef.current?.classList.add('hover')
-          if (t != null) clearTimeout(t)
-  
-          t = setTimeout(() => {
-            videoPlayerContainerRef.current?.classList.remove('hover')
-          }, 1000)
-        }
-      })
-    }
+    videoPlayerContainerRef.current.onmousemove = (() => {
+      if (!isThumbnailVideo && !isVideoLoading) {
+        videoPlayerContainerRef.current?.classList.add('hover')
+        if (t != null) clearTimeout(t)
+
+        t = setTimeout(() => {
+          videoPlayerContainerRef.current?.classList.remove('hover')
+        }, 1000)
+      }
+    })
 
     return () => {
       if (t != null) clearTimeout(t)
@@ -190,6 +192,27 @@ export const Video = ({
     else if (videoVolume > 0.8) return <i className="fa-duotone fa-volume-high" onClick={muteVideo}></i>
   }
 
+  const trackBufferInfo = (e: React.SyntheticEvent<HTMLVideoElement, Event>) => {
+    if (videoDurationRef.current) {
+      const max = Number(videoDurationRef.current.max)
+      const min = Number(videoDurationRef.current.min)
+      const t: { left: string, width: string }[] = []
+
+      const buffered = e.currentTarget.buffered
+      for (let i = 0; i < buffered.length; i++) {
+        const start = buffered.start(i)
+        const end = buffered.end(i)
+        const left = ((start - min) / max) * 100
+        const width = ((end - start) / max) * 100
+        
+        t.push({ left: `${left}%`, width: `${width}%` })
+        console.log({i, start, end})
+      }
+
+      setVideoBufferInfo(t)
+    }
+  }
+
   return (
     <div
       className="video-player-container"
@@ -217,13 +240,8 @@ export const Video = ({
           setVideoDuration(d)
         }}
         onTimeUpdate={(e) => {
-          const d = Math.floor(e.currentTarget.currentTime)
-          setTime(d)
-
-          const buffered = e.currentTarget.buffered
-          for (let i=0; i<buffered.length; i++) {
-            // console.log({start: buffered.start(i), end: buffered.end(i)})
-          }
+          setTime(Math.floor(e.currentTarget.currentTime))
+          trackBufferInfo(e)
         }}
         onLoadStart={() => setVideoLoading(true)}
         onLoadedData={() => setVideoLoading(false)}
@@ -257,6 +275,27 @@ export const Video = ({
                 setTime(time)
               }}
             />
+
+            {
+              videoBufferInfo.length
+                ? <>
+                  {
+                    videoBufferInfo.map((buffer, index) => {
+                      return (
+                        <div
+                          className="buffer-indicator"
+                          key={index}
+                          style={{
+                            '--left': buffer.left,
+                            '--width': buffer.width,
+                          } as React.CSSProperties}
+                        />
+                      )
+                    })
+                  }
+                </>
+                : <></>
+            }
           </div>
 
           <div className="action-menus">
@@ -302,13 +341,13 @@ export const Video = ({
               <i
                 className="fa fa-arrows-repeat"
                 onClick={() => setLoopVideo(prev => !prev)}
-                style={loopVideo ? {color: '#12f952'} : {}}
+                style={loopVideo ? { color: '#12f952' } : {}}
               ></i>
               <i className="fa fa-cog"></i>
               {
                 videoFullScreenStatus
-                ? <i className="fa fa-arrow-down-left-and-arrow-up-right-to-center" onClick={exitFullScreen}></i>
-                : <i className="fa fa-arrow-up-right-and-arrow-down-left-from-center" onClick={enterFullScreen}></i>
+                  ? <i className="fa fa-arrow-down-left-and-arrow-up-right-to-center" onClick={exitFullScreen}></i>
+                  : <i className="fa fa-arrow-up-right-and-arrow-down-left-from-center" onClick={enterFullScreen}></i>
               }
             </div>
           </div>

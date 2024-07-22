@@ -81,7 +81,7 @@
         left: 0px;
         right: 0px;
         transition: opacity 0.5s ease-out;
-        // opacity: 0;
+        opacity: 0;
 
         .video-title {
             padding: 8px 16px 0px 16px;
@@ -120,11 +120,15 @@
             cursor: default;
 
             .video-duration-indicator {
+                position: relative;
+                margin-bottom: 8px;
+
                 input[type='range'] {
                     margin: 0px;
                     width: 100%;
                     cursor: pointer;
-
+                    position: absolute;
+                    z-index: 2;
                     -webkit-appearance: none;
                     appearance: none;
                     background: transparent;
@@ -134,7 +138,7 @@
                     }
 
                     &::-webkit-slider-runnable-track {
-                        background: linear-gradient(to right, #6858df, #6858df), #ffffff80;
+                        background: linear-gradient(to right, #ff0000, #ff0000), #ffffff25;
                         background-size: var(--video-duration-bg-size, 0%) 100%;
                         background-repeat: no-repeat;
                         border-radius: 8px;
@@ -174,6 +178,15 @@
                         width: 12px;
                     }
                 }
+
+                .buffer-indicator {
+                    position: absolute;
+                    width: var(--width);
+                    height: 4px;
+                    top: 0;
+                    left: var(--left);
+                    background-color: #ffffff94;
+                }
             }
 
             .action-menus {
@@ -204,7 +217,7 @@
                     }
 
                     .volume-controller {
-                        padding: 8px 8px;
+                        padding: 4px 8px;
                         display: flex;
                         align-items: center;
                         border-radius: 16px;
