@@ -9,6 +9,9 @@ function App() {
     id: 'new-video-1',
     url: 'http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/BigBuckBunny.mp4',
     type: 'video/mp4',
+
+    // url: 'http://localhost:8000/uploads/videos/1080p/index.m3u8',
+    // type: 'application/x-mpegURL',
     totalPlayTime: '',
     title: 'My mountain journey | Sikkim tour 2024',
     uploadDate: ''

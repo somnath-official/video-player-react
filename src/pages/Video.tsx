@@ -1,6 +1,7 @@
 import { useEffect, useRef, useState } from "react"
 import { IVideo } from "../interfaces/Video"
 import { toHumanRaedableFormat } from "../utils/time"
+import Hls from "hls.js"
 
 export const Video = ({
   video,
@@ -121,6 +122,21 @@ export const Video = ({
     }
   }, [isThumbnailVideo, isVideoLoading])
 
+  /**
+   * Initiate HLS (HTTP Live Streaming) for video type m3u8
+   */
+  useEffect(() => {
+    if (videoRef.current && !videoRef.current.canPlayType(video.type)) {
+      if (Hls.isSupported()) {
+        const hls = new Hls();
+        hls.loadSource(video.url);
+        hls.attachMedia(videoRef.current);
+      } else if (videoRef.current.canPlayType(video.type)) {
+        videoRef.current.src = video.url;
+      }
+    }
+  }, [video.type, video.url])
+
   const play = () => {
     if (!isThumbnailVideo) {
       videoRef.current?.play()
@@ -206,7 +222,6 @@ export const Video = ({
         const width = ((end - start) / max) * 100
         
         t.push({ left: `${left}%`, width: `${width}%` })
-        console.log({i, start, end})
       }
 
       setVideoBufferInfo(t)
